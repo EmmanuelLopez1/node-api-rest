@@ -21,7 +21,7 @@ const emailExist = async(email = '') => {
 const userExistById = async(id)=>{
     const userExist = await User.findById(id)
     if (!userExist) {
-        return Promise.reject("User already exist")
+        return Promise.reject("User not found")
     }
 }
 

@@ -70,9 +70,11 @@ const updateUser = async(req, res = response)=> {
 
 const deleteUser = async(req, res = response)=> {
     const { id } = req.params
-    const user = await User.findByIdAndUpdate(id, {state:false})
 
-    res.json(user)
+    const user = await User.findByIdAndUpdate(id, {state:false})
+    const authenticatedUser = req.authenticatedUser 
+
+    res.json({user, authenticatedUser})
 }
 
 export {

@@ -3,6 +3,7 @@ import cors from "cors"
 
 // routes
 import user_router from "../routes/user.js"
+import auth_router from "../routes/auth.js"
 
 // db connection
 import { dbConnection } from '../database/config.js'
@@ -12,6 +13,8 @@ class Server {
         this.app = express()
         this.port = process.env.PORT
         this.usersPath = "/api/users"
+        this.authPath = "/api/auth"
+
 
         // db connection
         this.dbConnection()
@@ -29,6 +32,7 @@ class Server {
 
     routes() {
         this.app.use(this.usersPath, user_router)
+        this.app.use(this.authPath, auth_router)
     }
 
     middlewares() {
