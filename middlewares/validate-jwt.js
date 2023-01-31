@@ -22,6 +22,7 @@ const validateJWT = async(req, res, next)=>{
             })
         }
 
+        // verify user is active
         if( !user.state ){
             return res.status(401).json({
                 msg:"Invalid token - user with state in false"
@@ -33,7 +34,6 @@ const validateJWT = async(req, res, next)=>{
 
         next()
     } catch (err) {
-        console.log(err);
         res.status(401).json({
             msg:"Invalid Token"
         })

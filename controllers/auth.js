@@ -5,6 +5,7 @@ import User from "../models/user.js";
 
 // HELPERS
 import { generateJTW } from "../helpers/generateJWT.js";
+import { googleVerify } from "../helpers/google-verify.js";
 
 const logIn = async(req, res)=>{
     const { email, password } = req.body
@@ -47,7 +48,52 @@ const logIn = async(req, res)=>{
     }
 }
 
+const googleSignIn = async(req, res, next)=>{
+    const {id_token} = req.body
+    
+    try{
+        const {name, picture, email} = await googleVerify(id_token)
+
+        let user = await User.findOne({ email})
+
+        if(!user){
+            const data = {
+                name,
+                email,
+                password:":)",
+                picture,
+                google:true,
+                role:"USER_ROLE"
+            }
+
+            user = new User( data )
+            await user.save()
+        }
+
+        if(!user.state){
+            return res.status(401).json({
+                msg:"user disabled"
+            })
+        }
+
+        const token = await generateJTW( user.id )
+
+
+        res.json({
+            user,
+            token
+        })
+    }
+    catch(err){
+        console.log(err);
+        res.status(400).json({
+            ok:false,
+            msg:"Error unknowed"
+        })
+    }
+}
 
 export {
-    logIn
+    logIn,
+    googleSignIn
 }
