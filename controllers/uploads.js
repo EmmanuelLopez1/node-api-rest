@@ -111,21 +111,21 @@ const updateImageCloudinary = async (req, res) => {
     }
 
     try {
+        // clean images in cloudinary
         if (model.img) {
-            const pathImg = path.join(__dirname, "../uploads", collection, model.img)
-            if (fs.existsSync(pathImg)) {
-                fs.unlinkSync(pathImg)
-            }
+            const nombreArr = model.img.split('/')
+            let name = nombreArr[ nombreArr.length - 1]
+            const [ id ] = name.split('.')
+            cloudinaryv2.uploader.destroy( id )
         }
 
         const { tempFilePath } = req.files.file
-        const resp = await cloudinaryv2.uploader.upload( tempFilePath )
+        const { secure_url } = await cloudinaryv2.uploader.upload( tempFilePath )
+        
+        model.img = secure_url
+        await model.save()
 
-        // model.img = filePath
-
-        // await model.save()
-
-        res.status(200).json( resp )
+        res.status(200).json( model )
     } catch (err) {
         console.log(err);
         return res.status(500).json({
