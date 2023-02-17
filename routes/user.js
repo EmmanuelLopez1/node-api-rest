@@ -12,10 +12,11 @@ import {
         userExistById
 } from "../helpers/db-validators.js"
 
-import { 
-        verifyFields
- } from "../middlewares/validate-fields.js"
-
+import {
+        verifyFields,
+        validateJWT,
+        verifyRole
+} from "../middlewares/index.js"
 
 const router = Router()
 
@@ -41,9 +42,12 @@ router.patch('/:id',[
 ], updateUser)
 
 router.delete('/:id',[
+        validateJWT,
+        // isAdminRole,
+        verifyRole(["ADMIN_ROLE", "VENTAS_ROLE"]),
         check('id', 'No es un id valido').isMongoId(),
         check('id').custom( userExistById ),
-        verifyFields
+        verifyFields,
 ], deleteUser)
 
 
